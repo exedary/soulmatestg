@@ -7,6 +7,7 @@ type Pair struct {
 	DateCreated           time.Time
 	ShoppingList          []ShoppingList
 	RelationshipArtifacts []artifact
+	Acceptance            PairAcceptance
 }
 
 type PairAcceptance struct {

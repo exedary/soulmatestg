@@ -1,15 +1,11 @@
 package pair
 
-type CreatePairDto struct {
-	UserId    string
-	InvitedId string
+type createPairDto struct {
+	UserId    string `json:"userId"`
+	InvitedId string `json:"invitedId"`
 }
 
-type GetByIdQueryDto struct {
-	PairId string `uri:"id" binding:"required,uuid"`
-}
-
-type PairDto struct {
-	PairId      string
-	DateCreated string
+type pairDto struct {
+	PairId      string `json:"pairId"`
+	DateCreated string `json:"dateCreated"`
 }

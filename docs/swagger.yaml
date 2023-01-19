@@ -1,0 +1,70 @@
+definitions:
+  pair.createPairDto:
+    properties:
+      invitedId:
+        type: string
+      userId:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /pairs:
+    get:
+      consumes:
+      - application/json
+      description: get pair
+      parameters:
+      - description: Get pair
+        in: path
+        name: account
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+      summary: Get pair
+      tags:
+      - pairs
+    post:
+      consumes:
+      - application/json
+      description: add by json account
+      parameters:
+      - description: Get pair
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/pair.createPairDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+      summary: Creates a pair without acceptance from another user
+      tags:
+      - pairs
+swagger: "2.0"
