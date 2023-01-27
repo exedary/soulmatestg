@@ -3,25 +3,25 @@ package pair
 import (
 	"time"
 
-	"github.com/exedary/soulmates/internal/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ShoppingList struct {
-	Id          string
+	Id          primitive.ObjectID `bson:"_id"`
 	Items       []ShoppingItem
 	DateCreated time.Time
 	IsFinished  bool
 }
 
 type ShoppingItem struct {
-	Id          string
-	Description string
-	IsChecked   bool
+	Id          primitive.ObjectID `bson:"_id"`
+	Description string             `bson:"description"`
+	IsChecked   bool               `bson:"isChecked"`
 }
 
 func newShoppingList(items []ShoppingItem) *ShoppingList {
 	return &ShoppingList{
-		Id:          uuid.Generate(),
+		Id:          primitive.NewObjectID(),
 		DateCreated: time.Now().UTC(),
 		IsFinished:  false,
 		Items:       items,

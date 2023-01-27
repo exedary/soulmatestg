@@ -10,8 +10,9 @@ import (
 type Pair struct {
 	Id           primitive.ObjectID   `bson:"_id"`
 	DateCreated  time.Time            `bson:"dateCreated"`
-	ShoppingList []ShoppingList       `bson:"ShoppingList"`
-	Participants []primitive.ObjectID `bson:"Participants"`
+	ShoppingList []ShoppingList       `bson:"shoppingList"`
+	Participants []primitive.ObjectID `bson:"participants"`
+	IsActive     bool                 `bson:"isActive"`
 }
 
 func New(createdBy *person.Person) *Pair {
@@ -27,6 +28,7 @@ func New(createdBy *person.Person) *Pair {
 
 func (pair *Pair) AcceptInvitation(invited *person.Person) {
 	pair.Participants[1] = invited.Id
+	pair.IsActive = true
 }
 
 func (pair *Pair) AttachShoppingList(items []ShoppingItem) {

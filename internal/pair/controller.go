@@ -16,9 +16,8 @@ type Controller struct {
 func Register(router *gin.RouterGroup, repository pair.Repository) {
 	pairController := &Controller{repository: repository}
 
-	//router.GET(resourceName)
 	router.GET(resourceName+"/:id", pairController.get)
-	router.POST(resourceName, pairController.create)
+	//router.POST(resourceName, pairController.create)
 }
 
 // @BasePath /api/v1
@@ -34,8 +33,7 @@ func Register(router *gin.RouterGroup, repository pair.Repository) {
 //	@Failure		400		{object} string
 //	@Failure		422		{object} string
 //	@Router			/pairs [post]
-func (controller *Controller) create(context *gin.Context) {
-
+/*func (controller *Controller) create(context *gin.Context) {
 	response, err := Create(context.Request.Context(), controller.repository)
 
 	if err != nil {
@@ -43,7 +41,7 @@ func (controller *Controller) create(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, response)
-}
+}*/
 
 // @BasePath	/api/v1
 // @Summary		Get pair

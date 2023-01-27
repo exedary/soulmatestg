@@ -49,3 +49,19 @@ func (repository *PairRepository) GetById(ctx context.Context, id string) (*pair
 
 	return &pair, nil
 }
+
+func (repository *PairRepository) FindPairByPerson(ctx context.Context, personId string) (*pair.Pair, error) {
+	objectId, err := primitive.ObjectIDFromHex(personId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	pair := pair.Pair{}
+
+	if err := repository.pairs.FindOne(ctx, byPersonIdSpec(objectId)).Decode(pair); err != nil {
+		return nil, err
+	}
+
+	return &pair, nil
+}

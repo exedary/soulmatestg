@@ -13,9 +13,9 @@ func byIdSpec(id primitive.ObjectID) primitive.M {
 	return filter
 }
 
-func byPersonIdSpec(personId primitive.ObjectID) primitive.M {
+func byExternalIdSpec(externalId string) primitive.M {
 	filter := bson.M{
-		"participants": personId,
+		"external_id": externalId,
 	}
 
 	return filter
