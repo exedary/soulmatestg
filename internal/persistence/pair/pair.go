@@ -1,4 +1,4 @@
-package persistence
+package pair
 
 import (
 	"context"
@@ -13,20 +13,20 @@ const (
 	collectionName = "pairs"
 )
 
-type PairRepository struct {
+type Repository struct {
 	client *mongo.Client
 	pairs  *mongo.Collection
 }
 
-func NewPairRepository(client *mongo.Client) *PairRepository {
+func NewRepository(client *mongo.Client) *Repository {
 	client.Database(dbName).CreateCollection(context.TODO(), collectionName)
-	return &PairRepository{
+	return &Repository{
 		client: client,
 		pairs:  client.Database(dbName).Collection(collectionName),
 	}
 }
 
-func (repository *PairRepository) Create(ctx context.Context, pair *pair.Pair) (string, error) {
+func (repository *Repository) Create(ctx context.Context, pair *pair.Pair) (string, error) {
 	if _, err := repository.pairs.InsertOne(ctx, pair); err != nil {
 		return "", err
 	}
@@ -34,7 +34,7 @@ func (repository *PairRepository) Create(ctx context.Context, pair *pair.Pair) (
 	return pair.Id.Hex(), nil
 }
 
-func (repository *PairRepository) GetById(ctx context.Context, id string) (*pair.Pair, error) {
+func (repository *Repository) GetById(ctx context.Context, id string) (*pair.Pair, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
@@ -50,7 +50,7 @@ func (repository *PairRepository) GetById(ctx context.Context, id string) (*pair
 	return &pair, nil
 }
 
-func (repository *PairRepository) FindPairByPerson(ctx context.Context, personId string) (*pair.Pair, error) {
+func (repository *Repository) FindPairByPerson(ctx context.Context, personId string) (*pair.Pair, error) {
 	objectId, err := primitive.ObjectIDFromHex(personId)
 
 	if err != nil {

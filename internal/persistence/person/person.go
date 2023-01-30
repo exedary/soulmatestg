@@ -1,4 +1,4 @@
-package persistence
+package person
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"github.com/exedary/soulmates/internal/domain/person"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.uber.org/fx"
 )
 
 const (
@@ -13,20 +14,22 @@ const (
 	collectionName = "persons"
 )
 
-type PersonRepository struct {
+var Module = fx.Provide(NewRepository)
+
+type Repository struct {
 	client  *mongo.Client
 	persons *mongo.Collection
 }
 
-func NewPersonRepository(client *mongo.Client) *PersonRepository {
+func NewRepository(client *mongo.Client) *Repository {
 	client.Database(dbName).CreateCollection(context.TODO(), collectionName)
-	return &PersonRepository{
+	return &Repository{
 		client:  client,
 		persons: client.Database(dbName).Collection(collectionName),
 	}
 }
 
-func (repository *PersonRepository) Create(ctx context.Context, person *person.Person) (string, error) {
+func (repository *Repository) Create(ctx context.Context, person *person.Person) (string, error) {
 	if _, err := repository.persons.InsertOne(ctx, person); err != nil {
 		return "", err
 	}
@@ -34,7 +37,7 @@ func (repository *PersonRepository) Create(ctx context.Context, person *person.P
 	return person.Id.Hex(), nil
 }
 
-func (repository *PersonRepository) GetById(ctx context.Context, id string) (*person.Person, error) {
+func (repository *Repository) GetById(ctx context.Context, id string) (*person.Person, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
@@ -50,7 +53,7 @@ func (repository *PersonRepository) GetById(ctx context.Context, id string) (*pe
 	return &person, nil
 }
 
-func (repository *PersonRepository) GetByExternalId(ctx context.Context, externalId string) (*person.Person, error) {
+func (repository *Repository) GetByExternalId(ctx context.Context, externalId string) (*person.Person, error) {
 	person := person.Person{}
 
 	if err := repository.persons.FindOne(ctx, byExternalIdSpec(externalId)).Decode(person); err != nil {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/exedary/soulmates/internal/domain/person"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/fx"
 )
 
 const (
@@ -16,17 +17,19 @@ const (
 	persistedSession   = "persisted"
 )
 
-type Controller struct {
+var Module = fx.Invoke(Register)
+
+type controller struct {
 	personRepository person.Repository
 }
 
 func Register(router *gin.RouterGroup, repository person.Repository) {
-	controller := &Controller{personRepository: repository}
+	controller := &controller{personRepository: repository}
 	router.GET(resourceName+"/google/login", controller.login)
 	router.GET(resourceName+"/google/callback", controller.processGoogleCallback)
 }
 
-func (controller *Controller) login(c *gin.Context) {
+func (controller *controller) login(c *gin.Context) {
 	stateHash := randomString(30)
 
 	url := SignInWithGoogle(c.Request.Context(), controller.personRepository, stateHash)
@@ -37,7 +40,7 @@ func (controller *Controller) login(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
-func (controller *Controller) processGoogleCallback(c *gin.Context) {
+func (controller *controller) processGoogleCallback(c *gin.Context) {
 	authCode := c.Query("code")
 	oauthState, _ := c.Cookie(sessionStateToken)
 

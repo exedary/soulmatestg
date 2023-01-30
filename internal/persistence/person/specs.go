@@ -1,4 +1,4 @@
-package persistence
+package person
 
 import (
 	"go.mongodb.org/mongo-driver/bson"

@@ -1,4 +1,4 @@
-package persistence
+package pair
 
 import (
 	"go.mongodb.org/mongo-driver/bson"

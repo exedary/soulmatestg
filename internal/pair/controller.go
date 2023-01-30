@@ -5,16 +5,19 @@ import (
 
 	"github.com/exedary/soulmates/internal/domain/pair"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/fx"
 )
 
 const resourceName = "/pairs"
 
-type Controller struct {
+var Module = fx.Invoke(Register)
+
+type controller struct {
 	repository pair.Repository
 }
 
 func Register(router *gin.RouterGroup, repository pair.Repository) {
-	pairController := &Controller{repository: repository}
+	pairController := &controller{repository: repository}
 
 	router.GET(resourceName+"/:id", pairController.get)
 	//router.POST(resourceName, pairController.create)
@@ -48,13 +51,13 @@ func Register(router *gin.RouterGroup, repository pair.Repository) {
 // @Description	get pair
 // @Tags			pairs
 // @Accept			json
-// @Produce		json
+// @Produce			json
 // @Param			account	path	string	true	"Get pair"
 // @Success		200		{object} string
 // @Failure		400		{object} string
 // @Failure		422		{object} string
 // @Router			/pairs [get]
-func (controller *Controller) get(context *gin.Context) {
+func (controller *controller) get(context *gin.Context) {
 	id := context.Param("id")
 
 	response, err := GetById(context.Request.Context(), controller.repository, id)

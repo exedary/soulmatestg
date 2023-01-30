@@ -11,10 +11,6 @@ import (
 	"google.golang.org/api/idtoken"
 )
 
-type authCodeDto struct {
-	authCode string `json:"code"`
-}
-
 var config = &oauth2.Config{
 	ClientID:     os.Getenv("g_services_client_id"),
 	ClientSecret: os.Getenv("g_services_client_secret"),
