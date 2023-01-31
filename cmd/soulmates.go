@@ -21,6 +21,7 @@ func main() {
 		mongo.Module,
 		persistence.Module,
 		pair.Module,
+		auth.GoogleOauthModule,
 		auth.Module,
 	).Run()
 }

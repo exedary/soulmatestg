@@ -6,10 +6,10 @@ import (
 )
 
 type Invitation struct {
-	Id         primitive.ObjectID
-	From       primitive.ObjectID
-	AcceptedBy primitive.ObjectID
-	Accepted   bool
+	Id         primitive.ObjectID `bson:"_id"`
+	From       primitive.ObjectID `bson:"from"`
+	AcceptedBy primitive.ObjectID `bson:"acceptedBy"`
+	Accepted   bool               `bson:"accepted"`
 }
 
 func New(from *person.Person) *Invitation {

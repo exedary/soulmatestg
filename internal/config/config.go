@@ -6,8 +6,16 @@ import (
 )
 
 var Module = fx.Options(
-	fx.Provide(loadConfig),
+	fx.Provide(loadConfigFromFile),
+	fx.Provide(loadAuthConfigFromEnv),
 )
+
+type Oauth struct {
+	ClientID     string   `env:"g_services_client_id"`
+	ClientSecret string   `env:"g_services_client_secret"`
+	RedirectURL  string   `yaml:"redirect"`
+	Scopes       []string `yaml:"scopes"`
+}
 
 type Configuration struct {
 	Server struct {
@@ -18,11 +26,19 @@ type Configuration struct {
 		Username string `yaml:"user" env:"mongo_user"`
 		Password string `yaml:"pass" env:"mongo_pass"`
 	} `yaml:"database"`
+	GoogleOauth Oauth `yaml:"oauth"`
 }
 
-func loadConfig() *Configuration {
+func loadConfigFromFile() *Configuration {
 	var conf Configuration
 	cleanenv.ReadConfig("..\\configs\\soulmates.yaml", &conf)
 
 	return &conf
+}
+
+func loadAuthConfigFromEnv() *Oauth {
+	var authConfig Oauth
+	cleanenv.ReadEnv(authConfig)
+
+	return &authConfig
 }

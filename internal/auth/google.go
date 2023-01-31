@@ -3,33 +3,42 @@ package auth
 import (
 	"context"
 	"log"
-	"os"
 
+	"github.com/exedary/soulmates/internal/config"
 	"github.com/exedary/soulmates/internal/domain/person"
+	"go.uber.org/fx"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
+	googleOauth "golang.org/x/oauth2/google"
 	"google.golang.org/api/idtoken"
 )
 
-var config = &oauth2.Config{
-	ClientID:     os.Getenv("g_services_client_id"),
-	ClientSecret: os.Getenv("g_services_client_secret"),
-	RedirectURL:  "http://localhost:8080/auth/google/callback",
-	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile", "openid"},
-	Endpoint:     google.Endpoint,
+var GoogleOauthModule = fx.Provide(New)
+
+type google struct {
+	oauthConfiguration *oauth2.Config
 }
 
-func SignInWithGoogle(ctx context.Context, personRepository person.Repository, stateHash string) string {
-	return config.AuthCodeURL(stateHash)
+func New(config *config.Oauth) *google {
+	return &google{oauthConfiguration: &oauth2.Config{
+		ClientID:     config.ClientID,
+		ClientSecret: config.ClientSecret,
+		RedirectURL:  config.RedirectURL,
+		Endpoint:     googleOauth.Endpoint,
+		Scopes:       config.Scopes,
+	}}
 }
 
-func ProcessGoogleCallback(ctx context.Context, personRepository person.Repository, authCode string) {
-	tok, err := config.Exchange(ctx, authCode)
+func (google *google) SignInWithGoogle(ctx context.Context, personRepository person.Repository, stateHash string) string {
+	return google.oauthConfiguration.AuthCodeURL(stateHash)
+}
+
+func (google *google) ProcessGoogleCallback(ctx context.Context, personRepository person.Repository, authCode string) {
+	tok, err := google.oauthConfiguration.Exchange(ctx, authCode)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	payload, err := idtoken.Validate(ctx, tok.Extra("id_token").(string), config.ClientID)
+	payload, err := idtoken.Validate(ctx, tok.Extra("id_token").(string), google.oauthConfiguration.ClientID)
 	googleIdentifier := payload.Claims["sub"].(string)
 	googleEmail := payload.Claims["email"].(string)
 	googleGivenName := payload.Claims["given_name"].(string)

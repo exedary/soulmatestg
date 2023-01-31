@@ -3,6 +3,7 @@ package pair
 import (
 	"net/http"
 
+	"github.com/exedary/soulmates/internal/domain/invitation"
 	"github.com/exedary/soulmates/internal/domain/pair"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
@@ -13,11 +14,12 @@ const resourceName = "/pairs"
 var Module = fx.Invoke(Register)
 
 type controller struct {
-	repository pair.Repository
+	pairRepository        pair.Repository
+	invitationReposirtory invitation.Repository
 }
 
-func Register(router *gin.RouterGroup, repository pair.Repository) {
-	pairController := &controller{repository: repository}
+func Register(router *gin.RouterGroup, pairRepository pair.Repository, invitationRepository invitation.Repository) {
+	pairController := &controller{pairRepository: pairRepository, invitationReposirtory: invitationRepository}
 
 	router.GET(resourceName+"/:id", pairController.get)
 	//router.POST(resourceName, pairController.create)
@@ -36,15 +38,18 @@ func Register(router *gin.RouterGroup, repository pair.Repository) {
 //	@Failure		400		{object} string
 //	@Failure		422		{object} string
 //	@Router			/pairs [post]
-/*func (controller *Controller) create(context *gin.Context) {
-	response, err := Create(context.Request.Context(), controller.repository)
+func (controller *controller) create(context *gin.Context) {
+	ctx := context.Request.Context()
+	personId := ctx.Value("personId").(string)
+
+	response, err := Create(ctx, controller.pairRepository, controller.invitationReposirtory, personId)
 
 	if err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)
 	}
 
 	context.JSON(http.StatusOK, response)
-}*/
+}
 
 // @BasePath	/api/v1
 // @Summary		Get pair
@@ -60,7 +65,7 @@ func Register(router *gin.RouterGroup, repository pair.Repository) {
 func (controller *controller) get(context *gin.Context) {
 	id := context.Param("id")
 
-	response, err := GetById(context.Request.Context(), controller.repository, id)
+	response, err := GetById(context.Request.Context(), controller.pairRepository, id)
 
 	if err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)

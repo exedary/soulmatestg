@@ -19,6 +19,7 @@ func provideGinEngine(logger *zap.Logger) *gin.Engine {
 	router.Use(ginzap.Ginzap(logger, time.RFC3339, true))
 	return router
 }
+
 func provideV1(gin *gin.Engine) *gin.RouterGroup {
 	return gin.Group("api/v1")
 }

@@ -7,3 +7,7 @@ database:
   uri: "mongodb://localhost:27017"
   user: "admin"
   pass: "admin"
+
+oauth:
+  redirect: "http://localhost:8080/auth/google/callback"
+  scopes: ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile", "openid"]
